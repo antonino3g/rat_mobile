@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 class FormScreen extends StatefulWidget {
   @override
@@ -6,6 +8,10 @@ class FormScreen extends StatefulWidget {
 }
 
 class _FormScreenState extends State<FormScreen> {
+  final myController = TextEditingController();
+
+  String barcode = 'Unknown';
+
   String _clientName;
   String _userName;
   String _serialNumber;
@@ -40,14 +46,41 @@ class _FormScreenState extends State<FormScreen> {
         });
   }
 
+  // SCAN BarCode & QR Code
+
+  Future<void> scanBarcode() async {
+    try {
+      final barcode = await FlutterBarcodeScanner.scanBarcode(
+        '#ff6666',
+        'Cancel',
+        true,
+        ScanMode.BARCODE,
+      ).then((value) => setState(() => myController.text = value));
+    } on PlatformException {
+      barcode = 'Failed to get platform version.';
+    }
+  }
+
+  _printLatestValue() {
+    print("${myController.text}");
+  }
+
+  // void _setBarCodeValueIntoTextFormFieldSerialNumber() {
+  //   setState(() {
+  //     _serialNumber = barcode;
+  //     barcode += _serialNumber;
+  //   });
+  // }
+
   Widget _buildSerialNumber() {
     return TextFormField(
         decoration: InputDecoration(labelText: 'Serial Number'),
-        validator: (String value) {
-          if (value.trim().isEmpty) {
-            return 'Serial Number is required';
-          }
-        },
+        controller: myController,
+        // validator: (String value) {
+        //   if (value.trim().isEmpty) {
+        //     return 'Serial Number is required';
+        //   }
+        // },
         onSaved: (String value) {
           _serialNumber = value;
         });
@@ -70,7 +103,7 @@ class _FormScreenState extends State<FormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Form SONDA'),
+        title: Text('RAT SONDA / CTIS'),
       ),
       body: Container(
         margin: EdgeInsets.all(10),
@@ -100,7 +133,13 @@ class _FormScreenState extends State<FormScreen> {
                   print(_serialNumber);
                   print(_signature);
                 },
-              )
+              ),
+              FlatButton(
+                  child: Icon(Icons.settings_overscan),
+                  onPressed: () => [
+                        scanBarcode(),
+                        // _setBarCodeValueIntoTextFormFieldSerialNumber(),
+                      ]),
             ],
           ),
         ),

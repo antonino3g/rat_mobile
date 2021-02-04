@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'form_screen.dart';
+import 'views/form_screen.dart';
 
 void main() {
   runApp(MyApp());
