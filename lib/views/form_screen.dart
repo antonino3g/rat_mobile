@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:rat_mobile/routes/routes.dart';
 
 class FormScreen extends StatefulWidget {
   @override
@@ -65,22 +66,15 @@ class _FormScreenState extends State<FormScreen> {
     print("${myController.text}");
   }
 
-  // void _setBarCodeValueIntoTextFormFieldSerialNumber() {
-  //   setState(() {
-  //     _serialNumber = barcode;
-  //     barcode += _serialNumber;
-  //   });
-  // }
-
   Widget _buildSerialNumber() {
     return TextFormField(
         decoration: InputDecoration(labelText: 'Serial Number'),
         controller: myController,
-        // validator: (String value) {
-        //   if (value.trim().isEmpty) {
-        //     return 'Serial Number is required';
-        //   }
-        // },
+        validator: (String value) {
+          if (value.trim().isEmpty) {
+            return 'Serial Number is required';
+          }
+        },
         onSaved: (String value) {
           _serialNumber = value;
         });
@@ -104,6 +98,13 @@ class _FormScreenState extends State<FormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('RAT SONDA / CTIS'),
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.desktop_mac_outlined),
+              onPressed: () {
+                Navigator.of(context).pushNamed(AppRoutes.SIGNATURE);
+              })
+        ],
       ),
       body: Container(
         margin: EdgeInsets.all(10),
@@ -138,8 +139,10 @@ class _FormScreenState extends State<FormScreen> {
                   child: Icon(Icons.settings_overscan),
                   onPressed: () => [
                         scanBarcode(),
-                        // _setBarCodeValueIntoTextFormFieldSerialNumber(),
                       ]),
+              // FlatButton(
+              //   child: Icon(Icons.design_services_sharp),
+              // )
             ],
           ),
         ),

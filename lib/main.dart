@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rat_mobile/routes/routes.dart';
+import 'package:rat_mobile/views/signature.dart';
 import 'views/form_screen.dart';
 
 void main() {
@@ -14,6 +16,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: FormScreen(),
+      debugShowCheckedModeBanner: false,
+      routes: {
+        AppRoutes.SIGNATURE: (_) => SignatureDraw(),
+      },
     );
   }
 }
