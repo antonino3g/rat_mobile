@@ -1,60 +1,88 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:rat_mobile/views/signature_preview_page.dart';
+import 'package:signature/signature.dart';
 
-class SignatureDraw extends StatefulWidget {
+class SignaturePage extends StatefulWidget {
   @override
-  _SignatureDrawState createState() => _SignatureDrawState();
+  _SignaturePageState createState() => _SignaturePageState();
 }
 
-class _SignatureDrawState extends State<SignatureDraw> {
-  List<Offset> _points = <Offset>[];
+class _SignaturePageState extends State<SignaturePage> {
+  SignatureController controller;
 
   @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      body: new Container(
-        child: new GestureDetector(
-          onPanUpdate: (DragUpdateDetails details) {
-            setState(() {
-              RenderBox object = context.findRenderObject();
-              Offset _localPosition =
-                  object.globalToLocal(details.globalPosition);
-              _points = new List.from(_points)..add(_localPosition);
-            });
-          },
-          onPanEnd: (DragEndDetails details) => _points.add(null),
-          child: new CustomPaint(
-            painter: new Signature(points: _points),
-            size: Size.infinite,
-          ),
+  void initState() {
+    super.initState();
+
+    // pencil details
+    controller =
+        SignatureController(penStrokeWidth: 5, penColor: Colors.blueAccent);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: Column(
+          children: <Widget>[
+            Signature(
+              controller: controller,
+              // backgroundColor: Colors.black,
+              backgroundColor: Colors.white,
+            ),
+            buildButtons(context),
+          ],
         ),
-      ),
-      floatingActionButton: new FloatingActionButton(
-        child: new Icon(Icons.clear),
-        onPressed: () => _points.clear(),
-      ),
-    );
+      );
+
+  Widget buildButtons(BuildContext context) => Container(
+        color: Colors.black,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            buildCheck(context),
+            buildClear(),
+          ],
+        ),
+      );
+
+  Widget buildCheck(BuildContext context) => IconButton(
+        iconSize: 36,
+        icon: Icon(Icons.check, color: Colors.green),
+        onPressed: () async {
+          if (controller.isNotEmpty) {
+            final signature = await exportSignature();
+
+            await Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => SignaturePreviewPage(signature: signature),
+            ));
+          }
+        },
+      );
+
+  Widget buildClear() => IconButton(
+        iconSize: 36,
+        icon: Icon(Icons.clear),
+        color: Colors.red,
+        onPressed: () => controller.clear(),
+      );
+
+  Future<Uint8List> exportSignature() async {
+    final exportController = SignatureController(
+        penStrokeWidth: 2,
+        penColor: Colors.black,
+        exportBackgroundColor: Colors.white,
+        points: controller.points);
+
+    final signature = await exportController.toPngBytes();
+    exportController.dispose();
+
+    return signature;
   }
-}
-
-class Signature extends CustomPainter {
-  List<Offset> points;
-
-  Signature({this.points});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint paint = new Paint()
-      ..color = Colors.black
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 5.0;
-
-    for (int i = 0; i < points.length - 1; i++) {
-      if (points[i] != null && points[i + 1] != null) {
-        canvas.drawLine(points[i], points[i + 1], paint);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(Signature oldDelegate) => oldDelegate.points != points;
 }
