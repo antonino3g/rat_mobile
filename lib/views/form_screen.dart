@@ -9,6 +9,14 @@ class FormScreen extends StatefulWidget {
 }
 
 class _FormScreenState extends State<FormScreen> {
+  @override
+  void initState() {
+    //orientation screen Portrait
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    super.initState();
+  }
+
   final myController = TextEditingController();
 
   String barcode = 'Unknown';

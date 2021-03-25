@@ -1,9 +1,12 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rat_mobile/utils.dart';
+
+import 'form_screen.dart';
 
 class SignaturePreviewPage extends StatelessWidget {
   final Uint8List signature;
@@ -18,7 +21,7 @@ class SignaturePreviewPage extends StatelessWidget {
         backgroundColor: Colors.black,
         appBar: AppBar(
           leading: CloseButton(),
-          title: Text('Assinatura Preview'),
+          title: Text('Preview'),
           centerTitle: true,
           actions: [
             IconButton(
@@ -55,9 +58,12 @@ class SignaturePreviewPage extends StatelessWidget {
 
       Utils.showSnackBar(
         context,
-        text: 'Salvo com sucesso!',
+        text: 'Assinatura recolhida',
         color: Colors.green,
       );
+      await Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => FormScreen(),
+      ));
     } else {
       Utils.showSnackBar(
         context,

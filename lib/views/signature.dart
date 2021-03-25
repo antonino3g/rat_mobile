@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rat_mobile/views/signature_preview_page.dart';
 import 'package:signature/signature.dart';
 
@@ -14,6 +15,11 @@ class _SignaturePageState extends State<SignaturePage> {
 
   @override
   void initState() {
+    //orientation screen Pandscape
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
     super.initState();
 
     // pencil details
@@ -23,6 +29,14 @@ class _SignaturePageState extends State<SignaturePage> {
 
   @override
   void dispose() {
+    //orientation screen Portrait
+    SystemChrome.setPreferredOrientations([
+      // DeviceOrientation.landscapeRight,
+      // DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
     controller.dispose();
     super.dispose();
   }
@@ -37,9 +51,45 @@ class _SignaturePageState extends State<SignaturePage> {
               backgroundColor: Colors.white,
             ),
             buildButtons(context),
+            buildSwapOrientation(),
           ],
         ),
       );
+
+  Widget buildSwapOrientation() {
+    final isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
+
+    return GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        // Disable top change new Orientation
+        // onTap: () {
+        //   final newOrientation =
+        //       isPortrait ? Orientation.landscape : Orientation.portrait;
+
+        //   controller.clear();
+        //   setOrientation(newOrientation);
+        // },
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                isPortrait
+                    ? Icons.screen_lock_portrait
+                    : Icons.screen_lock_landscape,
+                size: 40,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Por favor, assine com seu Primeiro Nome.',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
+        ));
+  }
 
   Widget buildButtons(BuildContext context) => Container(
         color: Colors.black,
@@ -62,6 +112,7 @@ class _SignaturePageState extends State<SignaturePage> {
             await Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => SignaturePreviewPage(signature: signature),
             ));
+            controller.clear();
           }
         },
       );
@@ -76,7 +127,7 @@ class _SignaturePageState extends State<SignaturePage> {
   Future<Uint8List> exportSignature() async {
     final exportController = SignatureController(
         penStrokeWidth: 2,
-        penColor: Colors.black,
+        penColor: Colors.blueAccent,
         exportBackgroundColor: Colors.white,
         points: controller.points);
 
@@ -84,5 +135,19 @@ class _SignaturePageState extends State<SignaturePage> {
     exportController.dispose();
 
     return signature;
+  }
+
+  void setOrientation(Orientation orientation) {
+    if (orientation == Orientation.landscape) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeRight,
+        DeviceOrientation.landscapeLeft,
+      ]);
+    } else {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+    }
   }
 }
