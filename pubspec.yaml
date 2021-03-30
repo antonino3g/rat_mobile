@@ -23,10 +23,18 @@ dependencies:
   # show snackbar
   flushbar: ^1.10.4
 
+  # create pdf document
+  pdf: ^1.5.0
+
+  # pdf viewer
+  flutter_full_pdf_viewer: ^1.0.6
+
+  # save file
+  path_provider: ^1.6.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
 flutter:
   uses-material-design: true
-
