@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rat_mobile/views/signature_preview_page.dart';
+import 'package:rat_mobile/pages/signature_preview_page.dart';
 import 'package:signature/signature.dart';
 
 class SignaturePage extends StatefulWidget {

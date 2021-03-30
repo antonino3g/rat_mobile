@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+// import 'package:rat_mobile/pages/pdf_example.dart';
 import 'package:rat_mobile/routes/routes.dart';
-import 'package:rat_mobile/views/signature.dart';
-import 'views/form_screen.dart';
+import 'package:rat_mobile/pages/signature.dart';
+import 'pages/form_screen.dart';
 // import 'views/signature.dart';
 
 void main() {
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: FormScreen(),
+      // home: PdfExemple(),
       debugShowCheckedModeBanner: false,
       routes: {
         AppRoutes.SIGNATURE: (_) => SignaturePage(),
