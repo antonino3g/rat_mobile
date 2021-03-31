@@ -109,6 +109,29 @@ class _FormScreenState extends State<FormScreen> {
         });
   }
 
+  Widget _buildFloatingButton() {
+    return FloatingActionButton(
+      onPressed: () async {
+        writeOnPdf();
+        await savePdf();
+
+        Directory documentDirectory = await getApplicationDocumentsDirectory();
+
+        String documentPath = documentDirectory.path;
+
+        String fullPath = "$documentPath/example.pdf";
+
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => PdfPreviewScreen(
+                      path: fullPath,
+                    )));
+      },
+      child: Icon(Icons.save),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -122,8 +145,41 @@ class _FormScreenState extends State<FormScreen> {
               })
         ],
       ),
+      // This trailing comma makes auto-formatting nicer for build methods.
+
+      body: Container(
+        margin: EdgeInsets.all(10),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              _buildClientName(),
+              _buildUserName(),
+              _buildSerialNumber(),
+              _buildSignature(),
+              FlatButton(
+                  child: Icon(Icons.settings_overscan),
+                  onPressed: () => [
+                        scanBarcode(),
+                      ]),
+            ],
+          ),
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          if (!_formKey.currentState.validate()) {
+            return;
+          }
+
+          _formKey.currentState.save();
+
+          print(_clientName);
+          print(_userName);
+          print(_serialNumber);
+          print(_signature);
+
           writeOnPdf();
           await savePdf();
 
@@ -141,66 +197,7 @@ class _FormScreenState extends State<FormScreen> {
                         path: fullPath,
                       )));
         },
-        child: Icon(Icons.save),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-
-      body: Container(
-        margin: EdgeInsets.all(10),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              _buildClientName(),
-              _buildUserName(),
-              _buildSerialNumber(),
-              _buildSignature(),
-              RaisedButton(
-                child: Text(
-                  'Submit',
-                  style: TextStyle(color: Colors.blue, fontSize: 16),
-                ),
-                onPressed: () async {
-                  if (!_formKey.currentState.validate()) {
-                    return;
-                  }
-
-                  _formKey.currentState.save();
-
-                  print(_clientName);
-                  print(_userName);
-                  print(_serialNumber);
-                  print(_signature);
-                  writeOnPdf();
-
-                  await savePdf();
-
-                  Directory documentDirectory =
-                      await getApplicationDocumentsDirectory();
-
-                  String documentPath = documentDirectory.path;
-
-                  String fullPath = "$documentPath/example.pdf";
-
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => PdfPreviewScreen(
-                                path: fullPath,
-                              )));
-                },
-              ),
-              FlatButton(
-                  child: Icon(Icons.settings_overscan),
-                  onPressed: () => [
-                        scanBarcode(),
-                      ]),
-              // FlatButton(
-              //   child: Icon(Icons.design_services_sharp),
-              // )
-            ],
-          ),
-        ),
+        child: Icon(Icons.picture_as_pdf),
       ),
     );
   }
